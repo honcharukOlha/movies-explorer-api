@@ -1,4 +1,4 @@
-const Movie = require('../models/movie');
+const Movie = require('../models/movies');
 const NotFoundError = require('../errors/not-found-error');
 const ValidationError = require('../errors/validation-error');
 const ForbiddenError = require('../errors/forbidden-error');
@@ -57,7 +57,7 @@ module.exports.createMovies = (req, res, next) => {
 module.exports.deleteMovies = (req, res, next) => {
   const owner = req.user._id;
   const SUCCESS = 200;
-  Card.findById(req.params.movieId)
+  Movie.findById(req.params.movieId)
     .orFail(() => new NotFoundError('Видео не найдено'))
     .then((movie) => {
       if (movie.owner.toString() !== owner) {
@@ -65,7 +65,7 @@ module.exports.deleteMovies = (req, res, next) => {
           'Удаление видео других пользователей невозможно',
         );
       }
-      Card.findByIdAndDelete(req.params.cardId).then(() => {
+      Movie.findByIdAndDelete(req.params.cardId).then(() => {
         res.status(SUCCESS).send({ success: 'Видео успешно удалено' });
       });
     })

@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+const User = require('../models/users');
 const NotFoundError = require('../errors/not-found-error');
 const ValidationError = require('../errors/validation-error');
 const ConflictError = require('../errors/conflict-error');
@@ -63,8 +63,7 @@ module.exports.updateUser = (req, res, next) => {
     {
       new: true,
       runValidators: true,
-    },
-  )
+    })
     .orFail(() => new NotFoundError('Пользователь не найден'))
     .then((user) => {
       if (user) {
