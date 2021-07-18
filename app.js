@@ -4,17 +4,13 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-const { celebrate, Joi, errors } = require('celebrate');
-const usersRouter = require('./routes/users');
-const moviesRouter = require('./routes/movies');
-const { login } = require('./controllers/users');
-const { createUser } = require('./controllers/users');
-const auth = require('./middlewares/auth');
-const NotFoundError = require('./errors/not-found-error');
+const { errors } = require('celebrate');
+const allRoutes = require('./routes/index');
 const handlingErrors = require('./app-handling-errors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env;
+const { NODE_ENV, DATA_BASE } = process.env;
 
 // создаем приложение
 const app = express();
@@ -38,7 +34,7 @@ app.use((req, res, next) => {
 });
 
 // подключаемся к серверу mongo
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
+mongoose.connect(NODE_ENV === 'production' ? DATA_BASE : 'mongodb://localhost:27017/bitfilmsdb', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
@@ -63,41 +59,7 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.post(
-  '/signup',
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().required().email(),
-      password: Joi.string().required().min(8),
-      name: Joi.string().min(2).max(30),
-    }),
-  }),
-  createUser,
-);
-
-app.post(
-  '/signin',
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().required().email(),
-      password: Joi.string().required().min(8),
-    }),
-  }),
-  login,
-);
-
-// авторизация
-app.use(auth);
-
-app.use('/users', auth, usersRouter);
-app.use('/movies', auth, moviesRouter);
-app.use('/*', (req, res, next) => {
-  next(
-    new NotFoundError(
-      'Ресурс не найден',
-    ),
-  );
-});
+app.use('/api', allRoutes);
 
 app.use(errorLogger);
 

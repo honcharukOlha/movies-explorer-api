@@ -50,16 +50,18 @@ module.exports.createUser = (req, res, next) => {
         const error = new ConflictError(
           'Пользователь с указанным email уже существует',
         );
-        error.statusCode = 409;
         next(error);
+      } else if (err.name === 'ValidationError') {
+        next(new ValidationError('Переданы некорректные данные при создании пользователя'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports.updateUser = (req, res, next) => {
-  const { email, name, owner = req.user._id } = req.body;
-  User.findByIdAndUpdate(owner, { email, name },
+  const { owner = req.user._id, email, name } = req.body;
+  User.findByIdAndUpdate(owner, email, name,
     {
       new: true,
       runValidators: true,
@@ -73,6 +75,8 @@ module.exports.updateUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данные'));
+      } else if (err.name === 'CastError') {
+        next(new ConflictError('Обновление данных другого пользователя невозможно'));
       } else {
         next(err);
       }

@@ -58,16 +58,16 @@ module.exports.deleteMovies = (req, res, next) => {
   const owner = req.user._id;
   const SUCCESS = 200;
   Movie.findById(req.params.movieId)
+    .select('+owner')
     .orFail(() => new NotFoundError('Видео не найдено'))
     .then((movie) => {
-      if (movie.owner.toString() !== owner) {
-        throw new ForbiddenError(
-          'Удаление видео других пользователей невозможно',
-        );
+      if (owner === movie.owner.toString()) {
+        return movie.remove()
+          .then(() => res.status(SUCCESS).send({ success: 'Видео успешно удалено' }));
       }
-      Movie.findByIdAndDelete(req.params.cardId).then(() => {
-        res.status(SUCCESS).send({ success: 'Видео успешно удалено' });
-      });
+      throw new ForbiddenError(
+        'Удаление видео других пользователей невозможно',
+      );
     })
     .catch((err) => {
       if (err.name === 'CastError') {
