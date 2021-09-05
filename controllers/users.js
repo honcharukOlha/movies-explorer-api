@@ -8,8 +8,25 @@ const AutorizeError = require('../errors/authorize-error');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-module.exports.getUserById = (req, res, next) => {
+module.exports.getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
+    .orFail(() => new NotFoundError('Пользователь не найден'))
+    .then((user) => {
+      if (user) {
+        res.send(user);
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new ValidationError('Переданы некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
+};
+
+module.exports.getUserById = (req, res, next) => {
+  User.findById(req.params._id)
     .orFail(() => new NotFoundError('Пользователь не найден'))
     .then((user) => {
       if (user) {
