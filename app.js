@@ -12,25 +12,23 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { PORT = 3000 } = process.env;
 const { NODE_ENV, DATA_BASE } = process.env;
 
+const options = {
+  origin: [
+    'http://localhost:3001',
+    'https://super-movies-fro.nomoredomains.club',
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization', 'Accept'],
+  credentials: true,
+};
+
 // создаем приложение
 const app = express();
 app.use(express.json());
 
-app.use(cors());
-app.options('*', cors());
-
-app.use((req, res, next) => {
-  res.header(
-    -'Access-Control-Allow-Origin',
-    '*',
-  );
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept',
-  );
-  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
-  next();
-});
+app.use('*', cors(options));
 
 // подключаемся к серверу mongo
 mongoose.connect(
