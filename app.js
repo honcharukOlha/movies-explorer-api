@@ -16,14 +16,6 @@ const { NODE_ENV, DATA_BASE } = process.env;
 const app = express();
 app.use(express.json());
 
-app.use(
-  cors({
-    origin: "http://super-movies-fro.nomoredomains.club",
-    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
-    allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept"],
-  })
-);
-
 // подключаемся к серверу mongo
 mongoose.connect(
   NODE_ENV === "production"
