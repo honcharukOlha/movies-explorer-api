@@ -13,8 +13,18 @@ module.exports.getMovies = (req, res, next) => {
 
 module.exports.createMovies = (req, res, next) => {
   const {
-    country, director, duration, year, description,
-    image, trailer, thumbnail, nameRU, nameEN, movieId, owner = req.user._id,
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailer,
+    thumbnail,
+    nameRU,
+    nameEN,
+    movieId,
+    owner = req.user._id,
   } = req.body;
 
   Movie.create({
@@ -62,7 +72,8 @@ module.exports.deleteMovies = (req, res, next) => {
     .orFail(() => new NotFoundError('Видео не найдено'))
     .then((movie) => {
       if (owner === movie.owner.toString()) {
-        return movie.remove()
+        return movie
+          .remove()
           .then(() => res.status(SUCCESS).send({ success: 'Видео успешно удалено' }));
       }
       throw new ForbiddenError(
