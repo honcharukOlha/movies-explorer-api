@@ -47,7 +47,7 @@ app.get("/crash-test", () => {
   }, 0);
 });
 
-app.use("/api", allRoutes);
+app.use("/", allRoutes);
 
 app.use(errorLogger);
 
