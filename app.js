@@ -16,6 +16,7 @@ const options = {
   origin: [
     'http://localhost:3001',
     'https://super-movies-fro.nomoredomains.club',
+    '*',
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   preflightContinue: false,
