@@ -17,12 +17,12 @@ const app = express();
 app.use(express.json());
 
 app.use(cors());
-app.options('https://super-movies-fro.nomoredomains.club', cors());
+app.options('*', cors());
 
 app.use((req, res, next) => {
   res.header(
     -'Access-Control-Allow-Origin',
-    'https://super-movies-fro.nomoredomains.club',
+    '*',
   );
   res.header(
     'Access-Control-Allow-Headers',
