@@ -7,7 +7,7 @@ const { login, createUser } = require("../controllers/users");
 const NotFoundError = require("../errors/not-found-error");
 
 router.post(
-  "signup",
+  "/signup",
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email(),
@@ -19,7 +19,7 @@ router.post(
 );
 
 router.post(
-  "signin",
+  "/signin",
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email(),
@@ -29,9 +29,9 @@ router.post(
   login
 );
 
-router.use("users", auth, usersRouter);
-router.use("movies", auth, moviesRouter);
-router.use("*", (req, res, next) => {
+router.use("/users", auth, usersRouter);
+router.use("/movies", auth, moviesRouter);
+router.use("/*", (req, res, next) => {
   next(new NotFoundError("Ресурс не найден"));
 });
 
